@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cash Flow Intelligence Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="../vorco main website/index.html" aria-label="VORCO home">VORCO</a>
+      <p class="product-tag">[ Product ] Cash Flow Intelligence Engine</p>
+      <nav class="site-nav" id="site-nav">
+        <a href="../vorco main website/about.html" class="pill-link">[ About ]</a>
+        <a href="../vorco main website/product.html" class="pill-link">[ Product ]</a>
+        <a href="../vorco main website/contact.html" class="pill-link">[ Contact ]</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Vorco / OptiBuild</p>
+        <h1>Cash Flow Intelligence Engine</h1>
+        <p class="lede">Get month-wise cash needed, lender-ready bridge planning, and downside stress schedules.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <form id="cashFlowForm" class="panel form-panel">
+        <h2>Project Basics</h2>
+        <p class="lede small">Enter core inputs only.</p>
+        <div class="chart-toolbar product-mode-toolbar">
+          <label>Product mode
+            <select id="productMode">
+              <option value="simple" selected>Simple (5 inputs)</option>
+              <option value="advanced">Advanced (full model)</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-grid">
+          <label>Saleable area (sq ft)
+            <input id="saleableArea" type="number" min="1" step="100" />
+          </label>
+          <label>Sale price / sq ft
+            <input id="pricePerSqft" type="number" min="1" step="100" />
+          </label>
+          <label>Construction cost / sq ft
+            <input id="constructionCostPerSqft" type="number" min="1" step="50" />
+          </label>
+          <label>Land cost
+            <input id="landTotalCost" type="number" min="0" step="100000" />
+          </label>
+          <label>Starting cash
+            <input id="openingCash" type="number" min="0" step="100000" />
+          </label>
+          <label>Sales start month
+            <input id="salesStartMonth" type="number" min="1" max="60" step="1" />
+          </label>
+          <label>Sales speed
+            <select id="salesSpeed">
+              <option value="slow">Slow</option>
+              <option value="normal" selected>Normal</option>
+              <option value="fast">Fast</option>
+            </select>
+          </label>
+        </div>
+
+        <h3 class="section-title">Advanced</h3>
+        <p class="mini-note">Optional settings for financing and risk.</p>
+
+        <section id="advancedPanel" class="input-blocks">
+          <h3 class="section-title">Finance and Timing</h3>
+          <div class="payment-plan-grid">
+            <label>Project months
+              <input id="projectMonths" type="number" min="0" max="60" step="1" />
+            </label>
+            <label>Debt available
+              <input id="debtLimit" type="number" min="0" step="100000" />
+            </label>
+            <label>Debt annual interest %
+              <input id="debtRate" type="number" min="0" max="40" step="0.1" />
+            </label>
+            <label>Debt linked to construction %
+              <input id="debtCoverage" type="number" min="0" max="100" step="1" />
+            </label>
+            <label>Disbursement lag (months)
+              <input id="disbursementLagMonths" type="number" min="0" max="12" step="1" />
+            </label>
+            <label>Interest moratorium (months)
+              <input id="moratoriumMonths" type="number" min="0" max="36" step="1" />
+            </label>
+            <label>Repayment mode
+              <select id="repaymentMode">
+                <option value="cash-sweep" selected>Cash sweep</option>
+                <option value="bullet">Bullet at end</option>
+                <option value="emi">EMI after moratorium</option>
+              </select>
+            </label>
+            <label>Delay months
+              <input id="delayMonths" type="number" min="0" max="24" step="1" />
+            </label>
+            <label>Collection lag (months)
+              <input id="collectionLagMonths" type="number" min="0" max="12" step="1" />
+            </label>
+            <label>Collection efficiency %
+              <input id="collectionEfficiencyPct" type="number" min="50" max="100" step="1" />
+            </label>
+            <label>Collection default %
+              <input id="collectionDefaultPct" type="number" min="0" max="25" step="0.5" />
+            </label>
+            <label>Sales collection mode
+              <select id="salesCollectionMode">
+                <option value="auto" selected>Auto (velocity + curve)</option>
+                <option value="manual">Manual monthly inflows</option>
+              </select>
+            </label>
+            <label style="grid-column: 1 / -1;">Manual monthly sales inflows
+              <textarea id="manualSalesInflows" rows="3" placeholder="Comma or line-separated monthly values. Example: 1000000,1200000,1500000"></textarea>
+            </label>
+            <label>Reserve enforcement
+              <select id="reserveEnforcement">
+                <option value="hard" selected>Hard reserve floor</option>
+                <option value="soft">Soft reserve floor</option>
+                <option value="none">No reserve floor</option>
+              </select>
+            </label>
+            <label class="checkbox-inline">
+              <input id="applyFailureMechanics" type="checkbox" checked />
+              Apply failure mechanics when funding stress appears
+            </label>
+            <label>Sales slowdown %
+              <input id="salesSlowdown" type="number" min="0" max="100" step="1" />
+            </label>
+            <label>Cost escalation %
+              <input id="costEscalation" type="number" min="0" max="100" step="1" />
+            </label>
+            <label>Sales speed multiplier (slow)
+              <input id="salesSpeedSlowMultiplier" type="number" min="0.2" max="2" step="0.05" value="0.7" />
+            </label>
+            <label>Sales speed multiplier (normal)
+              <input id="salesSpeedNormalMultiplier" type="number" min="0.2" max="2" step="0.05" value="1" />
+            </label>
+            <label>Sales speed multiplier (fast)
+              <input id="salesSpeedFastMultiplier" type="number" min="0.2" max="2" step="0.05" value="1.35" />
+            </label>
+          </div>
+
+          <h3 class="section-title">Operating Costs</h3>
+          <div class="payment-plan-grid">
+            <label>Monthly soft costs
+              <input id="baseSoftCosts" type="number" min="0" step="50000" />
+            </label>
+            <label>Monthly statutory costs
+              <input id="monthlyStatutoryCosts" type="number" min="0" step="10000" />
+            </label>
+            <label>Statutory escalation %
+              <input id="statutoryEscalationPct" type="number" min="0" max="40" step="0.1" />
+            </label>
+            <label>Transaction fee on inflow %
+              <input id="transactionFeePct" type="number" min="0" max="10" step="0.1" />
+            </label>
+            <label>Transaction fee on debt draw %
+              <input id="debtDrawFeePct" type="number" min="0" max="10" step="0.1" />
+            </label>
+          </div>
+
+          <details class="details-panel">
+            <summary>More settings</summary>
+            <div class="payment-plan-grid" style="margin-top:10px;">
+            <label>Land upfront %
+              <input id="landUpfrontPct" type="number" min="0" max="100" step="1" />
+            </label>
+            <label>Land balance month
+              <input id="landBalanceMonth" type="number" min="0" max="60" step="1" />
+            </label>
+            <label>Approval cost
+              <input id="approvalCost" type="number" min="0" step="50000" />
+            </label>
+            <label>Approval month
+              <input id="approvalMonth" type="number" min="0" max="60" step="1" />
+            </label>
+            <label>Equity top-up amount
+                <input id="equityTopup" type="number" min="0" step="100000" />
+            </label>
+            <label>Equity top-up month
+                <input id="equityTopupMonth" type="number" min="0" max="60" step="1" />
+            </label>
+            </div>
+          </details>
+        </section>
+
+        <button type="submit" class="primary-btn">Analyze Project</button>
+      </form>
+
+      <aside id="resultsPanel" class="panel results-panel">
+        <h2>Results</h2>
+        <p id="truthStatement" class="truth-statement">Click Analyze Project to see monthly cash need and next steps.</p>
+
+        <section class="decision-stack" aria-label="Decision summary">
+          <article class="decision-card decision-card--truth">
+            <p class="decision-label">Quick summary</p>
+            <h3 id="decisionHeadline">Enter inputs to calculate.</h3>
+            <p id="decisionDetail">You will get a month-by-month funding view and tested actions to reduce the gap.</p>
+          </article>
+          <article class="decision-card">
+            <p class="decision-label">Go / no-go</p>
+            <strong id="goNoGoBadge">NA</strong>
+          </article>
+          <article class="decision-card">
+            <p class="decision-label">Runway</p>
+            <strong id="decisionRunwayValue">NA</strong>
+          </article>
+          <article class="decision-card">
+            <p class="decision-label">First month with gap</p>
+            <strong id="decisionNegativeMonthValue">NA</strong>
+          </article>
+          <article class="decision-card">
+            <p class="decision-label">Total gap</p>
+            <strong id="decisionFundingGapValue">NA</strong>
+          </article>
+        </section>
+
+        <section class="decision-panel failure-risk-panel" aria-label="No support failure risk">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">No-support risk view</p>
+              <h2>Failure risk without bridge cash</h2>
+              <p class="section-note">These values always show unsupported cash risk, even when support mode is set to with bridge.</p>
+            </div>
+            <span id="failureRiskBadge" class="risk-badge">Awaiting analysis</span>
+          </div>
+          <div class="metrics">
+            <article>
+              <span>Failure starts</span>
+              <strong id="failureRiskMonth">NA</strong>
+            </article>
+            <article>
+              <span>Peak unsupported deficit</span>
+              <strong id="failureRiskPeakDeficit">NA</strong>
+            </article>
+            <article>
+              <span>Months below zero cash</span>
+              <strong id="failureRiskUnderwaterMonths">NA</strong>
+            </article>
+            <article>
+              <span>End cash (no support)</span>
+              <strong id="failureRiskEndingCash">NA</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="decision-panel" aria-label="Commitment layer">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Commitment layer</p>
+              <h2>Committed vs due vs paid</h2>
+              <p class="section-note">Tracks obligations, due cash, and what was actually paid under reserve constraints.</p>
+            </div>
+          </div>
+          <div class="metrics">
+            <article>
+              <span>Total committed</span>
+              <strong id="commitmentCommitted">NA</strong>
+            </article>
+            <article>
+              <span>Total due</span>
+              <strong id="commitmentDue">NA</strong>
+            </article>
+            <article>
+              <span>Total paid</span>
+              <strong id="commitmentPaid">NA</strong>
+            </article>
+            <article>
+              <span>Carry-forward unpaid</span>
+              <strong id="commitmentUnpaid">NA</strong>
+            </article>
+          </div>
+          <div class="table-wrap">
+            <table class="input-table" aria-label="Commitment monthly table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Committed</th>
+                  <th>Due</th>
+                  <th>Paid</th>
+                  <th>Unpaid carry</th>
+                  <th>Stress level</th>
+                </tr>
+              </thead>
+              <tbody id="commitmentTableBody">
+                <tr><td colspan="6">Click Analyze Project to load commitment tracking.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="decision-panel" aria-label="Probabilistic risk">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Probabilistic risk</p>
+              <h2>Monte Carlo failure bands</h2>
+              <p class="section-note">Runs randomized downside sets to estimate failure probability and funding bands.</p>
+            </div>
+          </div>
+          <div class="metrics">
+            <article>
+              <span>Failure probability</span>
+              <strong id="monteFailureProb">NA</strong>
+            </article>
+            <article>
+              <span>P50 bridge gap</span>
+              <strong id="monteP50Gap">NA</strong>
+            </article>
+            <article>
+              <span>P90 bridge gap</span>
+              <strong id="monteP90Gap">NA</strong>
+            </article>
+            <article>
+              <span>Simulation runs</span>
+              <strong id="monteRunCount">NA</strong>
+            </article>
+          </div>
+          <div class="table-wrap">
+            <table class="input-table" aria-label="Monte Carlo probability bands">
+              <thead>
+                <tr>
+                  <th>Band</th>
+                  <th>Funding gap</th>
+                  <th>Failure month</th>
+                  <th>Reserve breaches</th>
+                </tr>
+              </thead>
+              <tbody id="monteBandsBody">
+                <tr><td colspan="4">Click Analyze Project to run probabilistic risk bands.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="decision-panel" aria-label="Investor trust layer">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Trust layer</p>
+              <h2>Run identity and audit trace</h2>
+              <p class="section-note">Shows run ID, changed assumptions from last run, and trace events for investor review.</p>
+            </div>
+          </div>
+          <div class="metrics">
+            <article>
+              <span>Run ID</span>
+              <strong id="runIdValue">NA</strong>
+            </article>
+            <article>
+              <span>Assumption diff</span>
+              <strong id="assumptionDiffValue">NA</strong>
+            </article>
+            <article>
+              <span>Audit events</span>
+              <strong id="auditTraceCountValue">NA</strong>
+            </article>
+            <article>
+              <span>Model confidence</span>
+              <strong id="confidenceBandValue">NA</strong>
+            </article>
+          </div>
+          <div class="table-wrap">
+            <table class="input-table" aria-label="Audit trace table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Stress</th>
+                  <th>Unpaid carry</th>
+                  <th>Debt outstanding</th>
+                  <th>Trace note</th>
+                </tr>
+              </thead>
+              <tbody id="auditTraceBody">
+                <tr><td colspan="5">Click Analyze Project to generate trace events.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="directionText" class="mini-note">Run analysis to see recommended next direction.</p>
+          <div class="table-wrap" style="margin-top: 10px;">
+            <table class="input-table" aria-label="Sensitivity driver table">
+              <thead>
+                <tr>
+                  <th>Driver</th>
+                  <th>Downside impact</th>
+                  <th>Upside impact</th>
+                  <th>Net sensitivity</th>
+                </tr>
+              </thead>
+              <tbody id="sensitivityBody">
+                <tr><td colspan="4">Click Analyze Project to generate sensitivity drivers.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="topSensitivityDriver" class="mini-note">Top sensitivity driver will be shown here after analysis.</p>
+        </section>
+
+        <section class="decision-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Cash needed each month</p>
+              <h2>Month-by-month funding</h2>
+              <p class="section-note">Choose support mode to compare real failure risk vs supported funding plan.</p>
+            </div>
+          </div>
+          <div class="chart-toolbar">
+            <label>View
+              <select id="monthlyFundingView">
+                <option value="all" selected>All months</option>
+                <option value="need">Only months needing bridge</option>
+                <option value="first12">First 12 months</option>
+              </select>
+            </label>
+            <label>Support mode
+              <select id="monthlySupportMode" title="Support means external funding added to avoid negative cash.">
+                <option value="required-bridge" selected>With bridge support</option>
+                <option value="no-bridge">No bridge support (real risk)</option>
+              </select>
+            </label>
+          </div>
+          <p class="mini-note">Support means external funding added each month to keep cash from going negative.</p>
+          <div class="metrics">
+            <article>
+              <span>Total bridge needed</span>
+              <strong id="monthlyBridgeTotal">NA</strong>
+            </article>
+            <article>
+              <span>Months needing bridge</span>
+              <strong id="monthlyBridgeMonths">NA</strong>
+            </article>
+            <article>
+              <span>Peak monthly bridge</span>
+              <strong id="monthlyBridgePeak">NA</strong>
+            </article>
+            <article>
+              <span>First bridge month</span>
+              <strong id="monthlyBridgeFirst">NA</strong>
+            </article>
+          </div>
+          <div class="table-wrap">
+            <table class="input-table" aria-label="Month by month bridge table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Money needed</th>
+                  <th>Total needed till month</th>
+                  <th>Base inflow</th>
+                  <th>Bridge inflow</th>
+                  <th>Total inflow (selected mode)</th>
+                  <th>Total outflow</th>
+                  <th>Closing cash (before bridge)</th>
+                </tr>
+              </thead>
+              <tbody id="monthlyFundingBody">
+                <tr><td colspan="8">Click Analyze Project to see month-by-month funding details.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="decision-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Funding focus</p>
+              <h2>Months with gap only</h2>
+              <p class="section-note">This view keeps only the months with a cash gap so planning is faster.</p>
+            </div>
+          </div>
+          <div class="metrics">
+            <article>
+              <span>Months with gap</span>
+              <strong id="monthlyNeedOnlyCount">NA</strong>
+            </article>
+            <article>
+              <span>Total need</span>
+              <strong id="monthlyNeedOnlyTotal">NA</strong>
+            </article>
+            <article>
+              <span>Gap period</span>
+              <strong id="monthlyNeedOnlyWindow">NA</strong>
+            </article>
+          </div>
+          <div id="bridgeNeedBars" class="funding-bars"></div>
+          <div id="bridgeCumulativeBars" class="funding-bars"></div>
+          <div class="table-wrap">
+            <table class="input-table" aria-label="Money needed months table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Bridge needed</th>
+                  <th>Cumulative bridge</th>
+                  <th>Base inflow</th>
+                  <th>Bridge inflow</th>
+                  <th>Total inflow (selected mode)</th>
+                  <th>Outflow</th>
+                  <th>Net cash flow (selected mode)</th>
+                </tr>
+              </thead>
+              <tbody id="monthlyNeedOnlyBody">
+                <tr><td colspan="8">Click Analyze Project to list only the months that need funding.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="decision-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Stress scenarios</p>
+              <h2>Downside funding (P50 / P90)</h2>
+              <p class="section-note">P50 is a medium downside case. P90 is a heavy downside case.</p>
+            </div>
+          </div>
+          <div class="metrics">
+            <article>
+              <span>P50 total bridge</span>
+              <strong id="p50BridgeTotal">NA</strong>
+            </article>
+            <article>
+              <span>P90 total bridge</span>
+              <strong id="p90BridgeTotal">NA</strong>
+            </article>
+          </div>
+          <div class="table-wrap">
+            <table class="input-table" aria-label="P50 and P90 monthly bridge table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Base bridge</th>
+                  <th>P50 bridge</th>
+                  <th>P90 bridge</th>
+                  <th>P50 cumulative</th>
+                  <th>P90 cumulative</th>
+                </tr>
+              </thead>
+              <tbody id="stressBridgeBody">
+                <tr><td colspan="6">Click Analyze Project to view P50 and P90 monthly funding schedules.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="decision-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Model health</p>
+              <h2>Model checks</h2>
+              <p class="section-note">Quick checks for debt limit, reserve pressure, and return quality.</p>
+            </div>
+          </div>
+          <div class="metrics">
+            <article>
+              <span>Estimated return (IRR)</span>
+              <strong id="auditIrrValue">NA</strong>
+            </article>
+            <article>
+              <span>Loan-to-cost</span>
+              <strong id="auditLtcValue">NA</strong>
+            </article>
+            <article>
+              <span>Months below reserve</span>
+              <strong id="auditReserveValue">NA</strong>
+            </article>
+            <article>
+              <span>Ending debt</span>
+              <strong id="auditDebtValue">NA</strong>
+            </article>
+          </div>
+          <p id="auditOverallBadge" class="truth-statement">Click Analyze Project to run model checks.</p>
+          <ul id="auditChecklist" class="simple-list decision-list">
+            <li>Click Analyze Project to validate model checks.</li>
+          </ul>
+        </section>
+
+        <section class="decision-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Main reason</p>
+              <h2>Why this cash gap happens</h2>
+              <p class="section-note">Simple split of the main reasons for the cash gap.</p>
+            </div>
+          </div>
+          <ul id="rootCauseList" class="simple-list decision-list">
+            <li>Enter inputs to see the breakdown.</li>
+          </ul>
+        </section>
+
+        <section class="decision-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Actions</p>
+              <h2>What to do next</h2>
+              <p class="section-note">Each action is tested and ranked by expected impact.</p>
+            </div>
+          </div>
+          <div id="fixOptionList" class="fix-grid">
+            <article class="fix-card">
+              <h3>Enter inputs to compare fixes.</h3>
+              <p>The engine will test equity, delay, and booking changes once the project is ready.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="investor-report simplified-hidden" aria-label="Investor summary report">
+          <div class="report-header">
+            <div>
+              <p class="report-kicker">[ Investor Summary ]</p>
+              <h3>Investment Memorandum Snapshot</h3>
+            </div>
+            <button type="button" id="printSummaryBtn" class="report-button">Print Summary</button>
+          </div>
+
+          <div id="investorReportContent"></div>
+        </section>
+
+        <div class="metrics metrics--secondary simplified-hidden">
+          <article>
+            <span>Runway</span>
+            <strong id="runwayValue">-</strong>
+          </article>
+          <article>
+            <span>First negative month</span>
+            <strong id="negativeMonthValue">-</strong>
+          </article>
+          <article>
+            <span>Funding gap</span>
+            <strong id="fundingGapValue">-</strong>
+          </article>
+          <article>
+            <span>Maximum deficit</span>
+            <strong id="maxDeficitValue">-</strong>
+          </article>
+          <article>
+            <span>Recovery month</span>
+            <strong id="recoveryMonthValue">-</strong>
+          </article>
+          <article>
+            <span>Ending cash</span>
+            <strong id="endingCashValue">-</strong>
+          </article>
+          <article>
+            <span>Total inflow</span>
+            <strong id="totalInflowValue">-</strong>
+          </article>
+          <article>
+            <span>Total outflow</span>
+            <strong id="totalOutflowValue">-</strong>
+          </article>
+          <article>
+            <span>Total interest cost</span>
+            <strong id="interestCostValue">-</strong>
+          </article>
+          <article>
+            <span>Ending debt</span>
+            <strong id="endingDebtValue">-</strong>
+          </article>
+          <article>
+            <span>Debt dependency</span>
+            <strong id="debtDependencyValue">-</strong>
+          </article>
+          <article>
+            <span>Average monthly sales</span>
+            <strong id="avgSalesValue">-</strong>
+          </article>
+          <article>
+            <span>Decision health score</span>
+            <strong id="healthScoreValue">-</strong>
+          </article>
+          <article>
+            <span>Peak debt</span>
+            <strong id="peakDebtValue">-</strong>
+          </article>
+        </div>
+
+        <div class="insight-box">
+          <h3>Top actions</h3>
+          <div class="action-cards">
+            <article class="action-card">
+              <h4>Equity injection</h4>
+              <p id="actionEquity">Click Analyze Project.</p>
+            </article>
+            <article class="action-card">
+              <h4>Timeline adjustment</h4>
+              <p id="actionTimeline">Click Analyze Project.</p>
+            </article>
+            <article class="action-card">
+              <h4>Sales improvement</h4>
+              <p id="actionSales">Click Analyze Project.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="insight-box simplified-hidden">
+          <h3>Risk alerts</h3>
+          <ul id="riskList" class="simple-list">
+            <li>No analysis yet.</li>
+          </ul>
+        </div>
+
+        <div class="insight-box simplified-hidden">
+          <h3>Cash flow summary</h3>
+          <p id="summaryText">No analysis yet.</p>
+        </div>
+
+        <section class="decision-panel visual-lab" aria-label="Interactive chart lab">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Charts</p>
+              <h2>Explore cash flow with charts</h2>
+              <p class="section-note">Hover a point to see exact values. Use filters to focus on shorter periods.</p>
+            </div>
+          </div>
+
+          <div class="chart-toolbar">
+            <label>Chart range
+              <select id="chartRangeSelect">
+                <option value="full" selected>Full timeline</option>
+                <option value="12">First 12 months</option>
+                <option value="18">First 18 months</option>
+                <option value="24">First 24 months</option>
+              </select>
+            </label>
+            <div class="series-toggle-group" id="seriesToggleGroup">
+              <label><input type="checkbox" data-series="inflow" checked /> Inflow</label>
+              <label><input type="checkbox" data-series="outflow" checked /> Outflow</label>
+              <label><input type="checkbox" data-series="balance" checked /> Balance</label>
+            </div>
+          </div>
+
+          <div class="visual-grid">
+            <div class="chart-box chart-box--hero">
+              <h3>Inflow vs outflow vs balance</h3>
+              <div class="chart-legend" aria-label="Monthly chart legend">
+                <span class="legend-item"><i class="legend-swatch inflow"></i>Inflow</span>
+                <span class="legend-item"><i class="legend-swatch outflow"></i>Outflow</span>
+                <span class="legend-item"><i class="legend-swatch balance"></i>Balance (+)</span>
+                <span class="legend-item"><i class="legend-swatch balance-negative"></i>Balance (-)</span>
+              </div>
+              <div id="chartBars" class="chart-surface"></div>
+            </div>
+
+            <div class="chart-box">
+              <h3>Bridge needed vs cumulative bridge</h3>
+              <div class="chart-legend" aria-label="Bridge chart legend">
+                <span class="legend-item"><i class="legend-swatch balance-negative"></i>Monthly bridge</span>
+                <span class="legend-item"><i class="legend-swatch debt-bar"></i>Cumulative bridge</span>
+              </div>
+              <div id="bridgeChartBars" class="chart-surface"></div>
+            </div>
+
+            <div class="chart-box">
+              <h3>Cumulative inflow vs outflow</h3>
+              <div class="chart-legend" aria-label="Cumulative chart legend">
+                <span class="legend-item"><i class="legend-swatch cumulative-inflow"></i>Cumulative inflow</span>
+                <span class="legend-item"><i class="legend-swatch cumulative-outflow"></i>Cumulative outflow</span>
+              </div>
+              <div id="cumulativeChartBars" class="chart-surface"></div>
+            </div>
+
+            <div class="chart-box">
+              <h3>Debt outstanding vs construction progress</h3>
+              <div class="chart-legend" aria-label="Debt chart legend">
+                <span class="legend-item"><i class="legend-swatch debt-bar"></i>Debt outstanding</span>
+                <span class="legend-item"><i class="legend-swatch progress-bar"></i>Construction spend intensity</span>
+              </div>
+              <div id="debtChartBars" class="chart-surface"></div>
+            </div>
+          </div>
+
+          <div class="chart-box">
+            <h3>Monthly cash table (filtered range)</h3>
+            <div class="table-wrap">
+              <table class="input-table compact-table">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Inflow</th>
+                    <th>Outflow</th>
+                    <th>Balance</th>
+                  </tr>
+                </thead>
+                <tbody id="criticalMonthsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
